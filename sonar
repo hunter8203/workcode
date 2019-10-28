@@ -1,0 +1,83 @@
+//启动sqnaqube 如果出现了 no router host 错误 就需要用docker容器名 代替数据库ip
+docker run -d --name sonarqube -p 9000:9000 -p 9092:9092 --link=mysql:mysql -e SONARQUBE_JDBC_USERNAME=root -e SONARQUBE_JDBC_PASSWORD=123456 -e SONARQUBE_JDBC_URL="jdbc:mysql://mysql:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance&useSSL=false" qmsq:675
+//启动mysql容器  -v之后是要将本地机器路径映射到容器路径下 解决重起后数据丢失的问题 如果出现./ibdata1 are 0x4800! 要删除data文件
+docker run -p 3306:3306 --name mysql -v /var/local/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.7.26、
+//启动psgsql
+docker run --name db -e POSTGRES_USER=sonar -e POSTGRES_PASSWORD=sonar -d postgres
+//重构镜像--向镜像里加入插件并重新制作
+Dockerfile
+FROM sonarqube:6.7.5
+ADD sonar-pdfreport-plugin-3.0.1.jar /opt/sonarqube/extensions/plugins/
+ADD sonar-l10n-zh-plugin-1.19.jar /opt/sonarqube/extensions/plugins/
+
+docker build -t qmsnoar:dev .
+
+
+
+docker run --name sonarqube --link mysqlserver -e SONARQUBE_JDBC_USERNAME=sonar -e SONARQUBE_JDBC_PASSWORD=sonar -e SONARQUBE_JDBC_URL=jdbc:mysql://localhost:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance&useSSL=false -p 9000:9000 -d sonarqube
+
+docker port 6b7ac1689533
+
+-p 9000:9000
+docker run -d --restart=always --name sonarqube -p 9000:9000  -p 9092:9092 --link=mysqlserver:mysql -e SONARQUBE_JDBC_USERNAME=sonar -e SONARQUBE_JDBC_PASSWORD=sonar -e SONARQUBE_JDBC_URL='jdbc:mysql://localhost:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance&useSSL=false' sonarqube
+
+docker run -p 3306:3306 --name mysqlserver -v $PWD/conf:/etc/mysql/conf.d -v $PWD/logs:/logs -v $PWD/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql
+docker run -p 3306:3306 --name mysql -v $PWD/conf:/etc/mysql/conf.d -v $PWD/logs:/logs -v $PWD/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.7.26
+docker run -p 3306:3306 --name mysql -v /var/local/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.7.26
+
+docker exec -it mysql mysql bash
+docker exec -it mysql /bin/bash
+docker exec -it sq /bin/bash
+
+docker run --name db -e POSTGRES_USER=sonar -e POSTGRES_PASSWORD=sonar -d postgres
+docker run --name sq --link db -e SONARQUBE_JDBC_URL=jdbc:postgresql://db:5432/sonar -p 9000:9000 -d sonarqube
+
+docker cp /usr/sonar-pdfreport-plugin-3.0.1.jar e6be0d48dcb4:/opt/sonarqube/extensions/plugins/sonar-pdfreport-plugin-3.0.1.jar
+
+mvn sonar:sonar \
+  -Dsonar.projectKey=sonartest \
+  -Dsonar.host.url=http://localhost:9000 \
+  -Dsonar.login=a8222573ac74fb19791cde3f24e79eaa88dc4c9c
+
+wget https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-6.7.zip
+
+chown -R sonar:qm2019* 
+tar -czf sonarqube-6.7.5.tar.gz
+tar -cvf /sonarqube-6.7.5/sonarqube-6.7.5.tar /sonarqube-6.7.5
+tar zcvf sonarqube.tar.gz sonarqube-6.7.5
+docker build -t qmsnoar:dev .
+
+
+docker run -t -i 199d675b24f3  /bin/bash
+docker exec -it b466d7fd1dc3 /bin/bash
+
+sudo docker rmi qmsonar:latest
+
+docker tag d596e15d49bb qmsonar:dev
+
+docker run -t -i qmsonar:dev /bin/bash
+
+docker run -p 3306:3306 -d -e MYSQL_ROOT_PASSWORD=密码 -v /windows盘符/指定的文件夹路径:/var/lib/mysql    mysql:5.7
+
+docker build -t qmsq:675 .
+firewall-cmd --zone=public --add-port=2222/tcp --permanent
+firewall-cmd --zone=public --query-port=2222/tcp
+semanage port -a -t ssh_port_t -p tcp 2222
+firewall-cmd --zone= public --remove-port=80/tcp --permanent
+docker run \
+    --publish 443:443 --publish 80:80 --publish 22:22 \
+    --name gitlab \
+    --volume /usr/local/gitlab/config:/etc/gitlab \
+    --volume /usr/local/gitlab/logs:/var/log/gitlab \
+    --volume /usr/local/gitlab/data:/var/opt/gitlab \
+    gitlab/gitlab-ce
+wget https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/gitlab-ce-12.3.5-ce.0.el7.x86_64.rpm
+
+rpm -i gitlab-ce-12.3.5-ce.0.el7.x86_64.rpm
+
+https://www.cnblogs.com/straycats/p/7637373.html
+
+
+
+
+V
